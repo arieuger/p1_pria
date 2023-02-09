@@ -19,21 +19,11 @@ public class Main : MonoBehaviour {
 
             yield return webRequest.SendWebRequest();
 
-            string[] pages = uri.Split('/');
-            int page = pages.Length - 1;
-
-            switch (webRequest.result) {
-                case UnityWebRequest.Result.ConnectionError:
-                case UnityWebRequest.Result.DataProcessingError:
-                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
-                    break;
-                case UnityWebRequest.Result.ProtocolError:
-                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
-                    break;
-                case UnityWebRequest.Result.Success:
-                    requestResult = JsonUtility.FromJson<QuestionList>(webRequest.downloadHandler.text);
-                    Debug.Log(ComposeMessage(requestResult));
-                    break;
+            if (!webRequest.result.Equals(UnityWebRequest.Result.Success)) {
+                Debug.LogError($"Erro: {webRequest.error}");
+            } else {
+                requestResult = JsonUtility.FromJson<QuestionList>(webRequest.downloadHandler.text);
+                Debug.Log(ComposeMessage(requestResult));
             }
         }
     }
